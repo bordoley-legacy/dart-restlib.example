@@ -1,21 +1,12 @@
 name: restlib_example
-description: A sample command-line application
+description: Sample applications using the restlib framework.
 dependencies:
-  crypto: any
   logging: any
-  mime: any
-  path: any
   restlib_common:
     git: https://code.google.com/p/dart-restlib.common/
   restlib_core:
     git: https://code.google.com/p/dart-restlib.core/  
   restlib_http_connector:
     git: https://code.google.com/p/dart-restlib.http-connector/
-  restlib_parsing:
-    git: https://code.google.com/p/dart-restlib.parsing/
   restlib_server:
     git: https://code.google.com/p/dart-restlib.server/
-dev_dependencies:
-  restlib_testing:
-    git: https://code.google.com/p/dart-restlib.testing/
-  unittest: any

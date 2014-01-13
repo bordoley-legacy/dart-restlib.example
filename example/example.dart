@@ -11,7 +11,7 @@ import "package:restlib_core/data.dart";
 import "package:restlib_core/http.dart";
 import "package:restlib_core/multipart.dart";
 
-import "package:restlib_server/connector.dart";
+import "package:restlib_http_connector/connector.dart";
 import "package:restlib_server/io.dart";
 import "package:restlib_server/server.dart";
 
@@ -30,8 +30,8 @@ void main() {
   final Directory fileDirectory = 
       new Directory(firstNotNull(Platform.environment["HOME"], posix.current));
 
-  final IOApplication app = 
-      new IOApplication(
+  final Application app = 
+      new Application(
           [ioAuthenticatedEchoResource(ROUTE.parse("/example/echo/authenticated/*path").value),
            ioEchoResource(ROUTE.parse("/example/echo/*path").value),
            ioFileResource(fileDirectory, Uri.parse("/example/file"))]);
