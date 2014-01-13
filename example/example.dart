@@ -28,7 +28,7 @@ void main() {
       print(record.message));
   
   final Directory fileDirectory = 
-      new Directory(firstNotNull(Platform.environment["HOME"], posix.current));
+      new Directory(Platform.environment["HOME"]);
 
   final Application app = 
       new Application(

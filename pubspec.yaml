@@ -2,6 +2,7 @@ name: restlib_example
 description: Sample applications using the restlib framework.
 dependencies:
   logging: any
+  path: any
   restlib_common:
     git: https://code.google.com/p/dart-restlib.common/
   restlib_core:
