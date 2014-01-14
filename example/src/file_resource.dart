@@ -77,7 +77,7 @@ Option<Dictionary<MediaRange, ResponseWriter>> responseWriters(final Request req
   } else if (entity is Directory) {
     mediaRange = MediaRange.TEXT_HTML;
     writer = writeDirectory;
-  } else if (entity is MultipartOutput<ByteRange>) {
+  } else if (entity is ByteStreamableMultipart) {
     mediaRange = response.contentInfo.mediaRange.value;
     writer = writeMultipart;
   } else {
