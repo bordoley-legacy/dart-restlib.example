@@ -25,7 +25,7 @@ class _FileResourceDelegate implements UniformResourceDelegate<FileSystemEntity>
             .then((final FileSystemEntityType type) =>
                 new PatternMatcher<FileSystemEntity>(
                     [inCaseOf(equals(FileSystemEntityType.FILE), (_) => 
-                        new ByteRangeFile(filePath)),
+                        new ByteRangeableFile(filePath)),
                      inCaseOf(equals(FileSystemEntityType.DIRECTORY), (_) => 
                          new Directory(filePath))])(type)
                   .map((final FileSystemEntity entity) {
@@ -107,17 +107,14 @@ IOResource ioFileResource(final Directory directory, final Uri path) {
 // FIXME: These really belong in some sort of common library. 
 // However restlib.server and restlib.server.io have no dependency on dart:io and 
 // restlib.connector seems like a weird place to put them
-class ByteRangeFile 
+class ByteRangeableFile 
     extends NoSuchMethodForwarder 
-    with ByteRangeSubRange
-    implements File, ByteRange {
-  ByteRangeFile(final String path) : super(new File(path));
+    implements File, ByteRangeable {
+  
+  ByteRangeableFile(final String path) : super(new File(path));
   
   File get delegate =>
       super.delegate;
-  
-  Stream<List<int>> asStream() =>
-      openRead();
 }
 
 Future writeFile(final Request request, final Response<File> response, final StreamSink<List<int>> msgSink) =>

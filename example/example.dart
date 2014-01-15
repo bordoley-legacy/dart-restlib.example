@@ -16,6 +16,7 @@ import "package:restlib_server/io.dart";
 import "package:restlib_server/server.dart";
 
 import "package:restlib_common/collections.dart";
+import "package:restlib_common/io.dart";
 import "package:restlib_common/objects.dart";
 
 part "src/echo_resource.dart";
