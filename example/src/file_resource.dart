@@ -5,7 +5,7 @@ MediaRange mediaRangeForFile(final file) =>
       .flatMap(MEDIA_RANGE.parse)
       .orElse(MediaRange.APPLICATION_OCTET_STREAM);
 
-class _FileResourceDelegate implements UniformResourceDelegate<FileSystemEntity> {
+class _FileResourceDelegate extends UniformResourceDelegate<FileSystemEntity> {
   final bool requireETagForUpdate = false;
   final bool requireIfUnmodifiedSinceForUpdate = false;
   final Route route;

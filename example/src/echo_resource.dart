@@ -16,7 +16,7 @@ IOResource ioEchoResource(final Route route) =>
         (_) => new Option(parseString), 
         new ResponseWriterProvider.alwaysProvides(new ResponseWriter.string(MediaRange.TEXT_PLAIN)));
 
-class _EchoResourceDelegate implements UniformResourceDelegate<String> {
+class _EchoResourceDelegate extends UniformResourceDelegate<String> {
   final bool requireETagForUpdate = false;
   final bool requireIfUnmodifiedSinceForUpdate = false;
   final Route route;
