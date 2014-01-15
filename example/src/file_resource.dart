@@ -115,6 +115,9 @@ class ByteRangeableFile
   
   File get delegate =>
       super.delegate;
+  
+  dynamic noSuchMethod(Invocation invocation) =>
+      super.noSuchMethod(invocation);
 }
 
 Future writeFile(final Request request, final Response<File> response, final StreamSink<List<int>> msgSink) =>
