@@ -1,12 +1,9 @@
 part of restlib.example;
 
-Future<bool> authenticateUserAndPwd(final String user, final String pwd) => 
-    new Future.value(user == "test" && pwd == "test");
-
 IOResource ioAuthenticatedEchoResource(final Route route) =>
     new IOResource.conneg(
         new Resource.authorizingResource(
-            new _EchoResource(route), [new Authorizer.basicAuth("testrealm", authenticateUserAndPwd)]),
+            new _EchoResource(route), [new _EchoAuthorizer()]),
         (_) => new Option(parseString), 
         new ResponseWriterProvider.alwaysProvides(new ResponseWriter.string(MediaRange.TEXT_PLAIN)));
 
@@ -45,4 +42,16 @@ class _EchoResource
   
   _EchoResource(final Route route):
     delegate = new Resource.uniform(new _EchoResourceDelegate(route));
+}
+
+class _EchoAuthorizer 
+    extends Object 
+    with ForwardingAuthorizer {
+  static Future<bool> authenticateUserAndPwd(final String user, final String pwd) => 
+      new Future.value(user == "test" && pwd == "test");
+  
+  final Authorizer delegate = new Authorizer.basicAuth("testrealm", authenticateUserAndPwd);
+  
+  Future<bool> authenticate(final Request request) =>
+      (request.method != Method.GET) ? delegate.authenticate(request) : new Future.value(true);
 }
