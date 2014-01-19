@@ -33,15 +33,14 @@ class _FileResourceDelegate extends UniformResourceDelegate<FileSystemEntity> {
                       
                       return Future.wait([lengthLookup, entity.stat()])
                         .then((final List results) => 
-                            (new ResponseBuilder()
-                              ..status = Status.SUCCESS_OK
-                              ..entity = entity
-                              ..contentInfo = (entity is File) ? 
-                                  ContentInfo.NONE.with_(
-                                    length: results[0],
-                                    mediaRange: mediaRangeForFile(entity)) : ContentInfo.NONE
-                              ..lastModified = results[1].modified
-                            ).build());
+                            new Response(
+                                Status.SUCCESS_OK,
+                                entity : entity,
+                                contentInfo : (entity is File) ? 
+                                    new ContentInfo(
+                                      length: results[0],
+                                      mediaRange: mediaRangeForFile(entity)) : ContentInfo.NONE,
+                                lastModified : results[1].modified));
                   }).orElse(CLIENT_ERROR_NOT_FOUND));
       }).orCompute(() => 
           new Future.error("route does not include a *path parameter"));

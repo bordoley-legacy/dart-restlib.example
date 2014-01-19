@@ -22,17 +22,15 @@ class _EchoResourceDelegate extends UniformResourceDelegate<String> {
   
   Future<Response> get(final Request request) => 
       new Future.value(
-        (new ResponseBuilder()
-          ..entity = request
-          ..status = Status.SUCCESS_OK
-        ).build());
+          new Response(
+              Status.SUCCESS_OK,
+              entity : request));
   
   Future<Response> post(final Request<String> request) => 
       new Future.value(
-        (new ResponseBuilder()
-          ..entity = request
-          ..status = Status.SUCCESS_OK
-        ).build());
+          new Response(
+              Status.SUCCESS_OK,
+              entity : request));
 }
 
 class _EchoResource
