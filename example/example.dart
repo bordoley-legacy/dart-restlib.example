@@ -31,12 +31,19 @@ void main() {
   
   final Directory fileDirectory = 
       new Directory(Platform.environment["HOME"]);
+  
+  final UserAgent server = USER_AGENT.parse("restlibExample/1.0").value;
+  
+  Response responseFilter(final Response response) =>
+      response.with_(
+          server: server);
 
   final Application app = 
       new Application(
           [ioAuthenticatedEchoResource(ROUTE.parse("/example/echo/authenticated/*path").value),
            ioEchoResource(ROUTE.parse("/example/echo/*path").value),
-           ioFileResource(fileDirectory, Uri.parse("/example/file"))]);
+           ioFileResource(fileDirectory, Uri.parse("/example/file"))],
+           responseFilter : responseFilter);
   HttpServer
     .bind("0.0.0.0", 8080)
     .then(httpServerListener((final Request request) => app, "http"));
