@@ -34,6 +34,9 @@ void main() {
   
   final UserAgent server = USER_AGENT.parse("restlibExample/1.0").value;
   
+  Request requestFilter(final Request request) =>
+      requestMethodOverride(request);
+   
   Response responseFilter(final Response response) =>
       response.with_(
           server: server);
@@ -43,6 +46,7 @@ void main() {
           [ioAuthenticatedEchoResource(ROUTE.parse("/example/echo/authenticated/*path").value),
            ioEchoResource(ROUTE.parse("/example/echo/*path").value),
            ioFileResource(fileDirectory, Uri.parse("/example/file"))],
+           requestFilter : requestFilter,
            responseFilter : responseFilter);
   HttpServer
     .bind("0.0.0.0", 8080)

@@ -38,8 +38,16 @@ class _EchoResource
     with ForwardingResource<String> {
   final Resource<String> delegate;
   
+  final RequestFilter extensionFilter = 
+      requestExtensionAsAccept(
+          new Dictionary.wrapMap(
+              {"html" : MediaRange.TEXT_HTML}));
+  
   _EchoResource(final Route route):
     delegate = new Resource.uniform(new _EchoResourceDelegate(route));
+  
+  Request filterRequest(final Request request) =>
+      extensionFilter(request);
 }
 
 class _EchoAuthorizer 
