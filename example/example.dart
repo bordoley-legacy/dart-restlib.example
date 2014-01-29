@@ -10,6 +10,7 @@ import "package:path/path.dart";
 import "package:restlib_core/data.dart";
 import "package:restlib_core/http.dart";
 import "package:restlib_core/multipart.dart";
+import "package:restlib_core/net.dart";
 
 import "package:restlib_http_connector/connector.dart";
 import "package:restlib_server/io.dart";
@@ -45,7 +46,7 @@ void main() {
       new Application(
           [ioAuthenticatedEchoResource(ROUTE.parse("/example/echo/authenticated/*path").value),
            ioEchoResource(ROUTE.parse("/example/echo/*path").value),
-           ioFileResource(fileDirectory, Uri.parse("/example/file"))],
+           ioFileResource(fileDirectory, URI_.parse("/example/file").value)],
            requestFilter : requestFilter,
            responseFilter : responseFilter);
   HttpServer

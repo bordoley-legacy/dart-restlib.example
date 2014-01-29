@@ -11,15 +11,16 @@ class _FileResourceDelegate extends UniformResourceDelegate<FileSystemEntity> {
   final Route route;
   final Directory _base;
   
-  _FileResourceDelegate(this._base, final Uri path):
-    route = ROUTE.parse(path.path + "/*path").value;
+  _FileResourceDelegate(this._base, final URI path):
+    route = ROUTE.parse(path.path.toString() + "/*path").value;
   
   Future<Response> get(final Request request) {
     final Dictionary<String, String> params = 
-        route.parsePathParameters(new RoutableUri.wrap(request.uri));
+        route.parsePathParameters(request.uri);
     
     return params["path"]
       .map((final String path) {
+        // FIXME use URI component API instead of Uri.decode
         final String filePath = posix.join(_base.path, Uri.decodeComponent(path));
         return FileSystemEntity.type(filePath)
             .then((final FileSystemEntityType type) =>
@@ -56,6 +57,8 @@ Future writeDirectory(final Request request, final Response<Directory> response,
       .list(recursive: false, followLinks: false)
         .forEach((final FileSystemEntity entity) {
           final String path = entity.path.replaceFirst(entity.parent.path, "");
+          
+          // FIXME: Use URI codec instead of URI.encode
           final String uriPath = path.split("/").map(Uri.encodeComponent).join("/");
 
           buffer.write("<a href=\"${request.uri.toString()}${uriPath}\">${path}</a><br/>\n");
@@ -89,7 +92,7 @@ Option<Dictionary<MediaRange, ResponseWriter>> responseWriters(final Request req
           mediaRange, new ResponseWriter.forContentType(mediaRange, writer)));
 }
 
-IOResource ioFileResource(final Directory directory, final Uri path) {  
+IOResource ioFileResource(final Directory directory, final URI path) {  
   final Resource<FileSystemEntity> resource = 
       new Resource.uniform(new _FileResourceDelegate(directory, path));
   
