@@ -35,7 +35,7 @@ void main() {
   final Directory fileDirectory = 
       new Directory(Platform.environment["HOME"]);
   
-  final UserAgent server = USER_AGENT.parse("restlibExample/1.0").value;
+  final UserAgent server = USER_AGENT.parseValue("restlibExample/1.0");
   
   Request requestFilter(final Request request) =>
       requestMethodOverride(request);
@@ -44,22 +44,27 @@ void main() {
       response.with_(
           server: server);
 
-  ImmutableBiMap<_UserPwd, String> userPwdToSid =
+  final ImmutableBiMap<_UserPwd, String> userPwdToSid =
       Persistent.EMPTY_BIMAP.put(new _UserPwd("test", "test"), "1234");
+  
+  final Router router =
+      Router.EMPTY.putAll(
+          [ioFormBasedAuthResource(ROUTE.parseValue("/example/login"), userPwdToSid),
+           sessionAuthenticatedEchoResource(
+               ROUTE.parseValue("/example/echo/session/*path"), 
+               URI_.parseValue("/example/login"),
+               (final Request request, final String sid) => 
+                   userPwdToSid.inverse[sid].isNotEmpty),
+           ioAuthenticatedEchoResource(ROUTE.parseValue("/example/echo/authenticated/*path")),
+           ioEchoResource(ROUTE.parseValue("/example/echo/*path")),
+           ioFileResource(fileDirectory, URI_.parseValue("/example/file"))]);
   
   final Application app = 
       new Application(
-          [ioFormBasedAuthResource(ROUTE.parse("/example/login").value, userPwdToSid),
-           sessionAuthenticatedEchoResource(
-               ROUTE.parse("/example/echo/session/*path").value, 
-               URI_.parse("/example/login").value,
-               (final Request request, final String sid) =>
-                   userPwdToSid.inverse[sid].isNotEmpty),
-           ioAuthenticatedEchoResource(ROUTE.parse("/example/echo/authenticated/*path").value),
-           ioEchoResource(ROUTE.parse("/example/echo/*path").value),
-           ioFileResource(fileDirectory, URI_.parse("/example/file").value)],
-           requestFilter : requestFilter,
-           responseFilter : responseFilter);
+          router,
+          requestFilter : requestFilter,
+          responseFilter : responseFilter);
+  
   HttpServer
     .bind("0.0.0.0", 8080)
     .then(httpServerListener((final Request request) => app, "http"));

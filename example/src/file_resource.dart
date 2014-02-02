@@ -12,7 +12,7 @@ class _FileResourceDelegate extends UniformResourceDelegate<FileSystemEntity> {
   final Directory _base;
   
   _FileResourceDelegate(this._base, final URI path):
-    route = ROUTE.parse(path.path.toString() + "/*path").value;
+    route = ROUTE.parseValue(path.path.toString() + "/*path");
   
   Future<Response> get(final Request request) {
     final Dictionary<String, String> params = 

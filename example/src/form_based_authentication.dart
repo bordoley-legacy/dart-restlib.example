@@ -96,7 +96,7 @@ class _FormBasedAuthResource extends UniformResourceDelegate<Form> {
   
         return new Response(
             Status.REDIRECTION_FOUND,
-            setCookies: [SET_COOKIE.parse("$_SID=$sid").value],
+            setCookies: [SET_COOKIE.parseValue("$_SID=$sid")],
             location: redirectURI);
       }).orCompute(() => 
           new Response(
