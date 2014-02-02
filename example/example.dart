@@ -23,8 +23,10 @@ import "package:restlib_common/objects.dart";
 
 part "src/echo_resource.dart";
 part "src/file_resource.dart";
+part "src/form_based_authentication.dart";
+part "src/session_authenticated_resource.dart";
 
-void main() {       
+void main() {   
   hierarchicalLoggingEnabled = false;
   Logger.root.level = Level.FINEST;
   Logger.root.onRecord.forEach((final LogRecord record) => 
@@ -42,9 +44,18 @@ void main() {
       response.with_(
           server: server);
 
+  ImmutableBiMap<_UserPwd, String> userPwdToSid =
+      Persistent.EMPTY_BIMAP.put(new _UserPwd("test", "test"), "1234");
+  
   final Application app = 
       new Application(
-          [ioAuthenticatedEchoResource(ROUTE.parse("/example/echo/authenticated/*path").value),
+          [ioFormBasedAuthResource(ROUTE.parse("/example/login").value, userPwdToSid),
+           sessionAuthenticatedEchoResource(
+               ROUTE.parse("/example/echo/session/*path").value, 
+               URI_.parse("/example/login").value,
+               (final Request request, final String sid) =>
+                   userPwdToSid.inverse[sid].isNotEmpty),
+           ioAuthenticatedEchoResource(ROUTE.parse("/example/echo/authenticated/*path").value),
            ioEchoResource(ROUTE.parse("/example/echo/*path").value),
            ioFileResource(fileDirectory, URI_.parse("/example/file").value)],
            requestFilter : requestFilter,

@@ -7,6 +7,14 @@ IOResource ioAuthenticatedEchoResource(final Route route) =>
         (_) => new Option(parseString), 
         new ResponseWriterProvider.alwaysProvides(new ResponseWriter.string(MediaRange.TEXT_PLAIN)));
 
+IOResource sessionAuthenticatedEchoResource(final Route route, final URI loginForm, bool validateSID(Request request, String sid)) =>
+    new IOResource.conneg(
+        new _SessionAuthenticatedResource(
+            new _EchoResource(route),
+            loginForm, validateSID),
+        (_) => new Option(parseString), 
+        new ResponseWriterProvider.alwaysProvides(new ResponseWriter.string(MediaRange.TEXT_PLAIN)));
+
 IOResource ioEchoResource(final Route route) =>
     new IOResource.conneg(
         new _EchoResource(route), 
