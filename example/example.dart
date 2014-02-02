@@ -48,7 +48,7 @@ void main() {
       Persistent.EMPTY_BIMAP.put(new _UserPwd("test", "test"), "1234");
   
   final Router router =
-      Router.EMPTY.putAll(
+      Router.EMPTY.addAll(
           [ioFormBasedAuthResource(ROUTE.parseValue("/example/login"), userPwdToSid),
            sessionAuthenticatedEchoResource(
                ROUTE.parseValue("/example/echo/session/*path"), 
