@@ -51,13 +51,13 @@ void main() {
       Router.EMPTY.addAll(
           [ioFormBasedAuthResource(ROUTE.parseValue("/example/login"), userPwdToSid),
            sessionAuthenticatedEchoResource(
-               ROUTE.parseValue("/example/echo/session/*path"), 
+               ROUTE.parseValue("/example/echo/*session"), 
                URI_.parseValue("/example/login"),
                (final Request request, final String sid) => 
                    userPwdToSid.inverse[sid].isNotEmpty),
-           ioAuthenticatedEchoResource(ROUTE.parseValue("/example/echo/authenticated/*path")),
-           ioEchoResource(ROUTE.parseValue("/example/echo/*path")),
-           ioFileResource(fileDirectory, URI_.parseValue("/example/file"))]);
+           ioAuthenticatedEchoResource(ROUTE.parseValue("/example/echo/*authenticated")),
+           ioEchoResource(ROUTE.parseValue("/example/*echo")),
+           ioFileResource(fileDirectory, URI_.parseValue("/example"))]);
   
   final Application app = 
       new Application(

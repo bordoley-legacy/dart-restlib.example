@@ -12,16 +12,17 @@ class _FileResourceDelegate extends UniformResourceDelegate<FileSystemEntity> {
   final Directory _base;
   
   _FileResourceDelegate(this._base, final URI path):
-    route = ROUTE.parseValue(path.path.toString() + "/*path");
+    route = ROUTE.parseValue(path.path.toString() + "/*file");
   
   Future<Response> get(final Request request) {
     final Dictionary<String, String> params = 
         route.parsePathParameters(request.uri);
     
-    return params["path"]
+    return params["file"]
       .map((final String path) {
         // FIXME use URI component API instead of Uri.decode
-        final String filePath = posix.join(_base.path, Uri.decodeComponent(path));
+        final Path relativeFilePath = Path.EMPTY.addAll(PATH.parseValue(path).skip(1));
+        final String filePath = posix.join(_base.path, Uri.decodeComponent(relativeFilePath.toString()));
         return FileSystemEntity.type(filePath)
             .then((final FileSystemEntityType type) =>
                 new PatternMatcher<FileSystemEntity>(
@@ -44,7 +45,7 @@ class _FileResourceDelegate extends UniformResourceDelegate<FileSystemEntity> {
                                 lastModified : results[1].modified));
                   }).orElse(CLIENT_ERROR_NOT_FOUND));
       }).orCompute(() => 
-          new Future.error("route does not include a *path parameter"));
+          new Future.error("route does not include a *file parameter"));
   }
 }
 
