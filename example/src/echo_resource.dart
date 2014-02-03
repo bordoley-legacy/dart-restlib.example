@@ -61,7 +61,7 @@ class _EchoResource
 class _EchoAuthorizer 
     extends Object 
     with ForwardingAuthorizer {
-  static Future<bool> authenticateUserAndPwd(final String user, final String pwd) => 
+  static Future<bool> authenticateUserAndPwd(final Request, final String user, final String pwd) => 
       new Future.value(user == "test" && pwd == "test");
   
   final Authorizer delegate = new Authorizer.basicAuth("testrealm", authenticateUserAndPwd);
