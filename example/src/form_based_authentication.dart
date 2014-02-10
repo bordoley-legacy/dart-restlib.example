@@ -48,11 +48,11 @@ IOResource ioFormBasedAuthResource(final Route route, Option<String> sidForUserP
       (final ContentInfo contentInfo) => 
           contentInfo.mediaRange
             .map((final MediaRange mr) {
-              if (mr == MediaRange.APPLICATION_WWW_FORM) {
+              if (mr == APPLICATION_WWW_FORM) {
                 return parseForm;
               }
             }),
-      new ResponseWriterProvider.alwaysProvides(new ResponseWriter.string(MediaRange.TEXT_HTML))  
+      new ResponseWriterProvider.alwaysProvides(new ResponseWriter.string(TEXT_HTML))  
     );
 
 typedef Option<String> _SidForUserPwd(final _UserPwd userPwd);

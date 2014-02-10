@@ -3,7 +3,7 @@ part of restlib.example;
 MediaRange mediaRangeForFile(final file) =>
     new Option(lookupMimeType(file.path))
       .flatMap(MEDIA_RANGE.parse)
-      .orElse(MediaRange.APPLICATION_OCTET_STREAM);
+      .orElse(APPLICATION_OCTET_STREAM);
 
 class _FileResourceDelegate extends UniformResourceDelegate<FileSystemEntity> {
   final bool requireETagForUpdate = false;
@@ -78,13 +78,13 @@ Option<Dictionary<MediaRange, ResponseWriter>> responseWriters(final Request req
     mediaRange = mediaRangeForFile(entity);
     writer = writeFile;
   } else if (entity is Directory) {
-    mediaRange = MediaRange.TEXT_HTML;
+    mediaRange = TEXT_HTML;
     writer = writeDirectory;
   } else if (entity is ByteStreamableMultipart) {
     mediaRange = response.contentInfo.mediaRange.value;
     writer = writeMultipart;
   } else {
-    mediaRange = MediaRange.TEXT_PLAIN;
+    mediaRange = TEXT_PLAIN;
     writer = writeString;
   }
   

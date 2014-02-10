@@ -1,6 +1,7 @@
 library restlib.example;
 
 import "dart:async";
+import "dart:convert";
 import "dart:io";
 
 import "package:logging/logging.dart";
@@ -8,6 +9,7 @@ import "package:mime/mime.dart";
 import "package:path/path.dart";
 
 import "package:restlib_core/data.dart";
+import "package:restlib_core/data.media_ranges.dart";
 import "package:restlib_core/http.dart";
 import "package:restlib_core/multipart.dart";
 import "package:restlib_core/net.dart";
@@ -18,13 +20,20 @@ import "package:restlib_server/server.dart";
 
 import "package:restlib_common/collections.dart";
 import "package:restlib_common/collections.immutable.dart";
+import "package:restlib_common/collections.mutable.dart";
 import "package:restlib_common/io.dart";
 import "package:restlib_common/objects.dart";
+import "package:restlib_common/preconditions.dart";
+
+import "package:restlib_atom/atom.dart";
 
 part "src/echo_resource.dart";
 part "src/file_resource.dart";
 part "src/form_based_authentication.dart";
 part "src/session_authenticated_resource.dart";
+part "src/blog/entry_resource.dart";
+part "src/blog/feed_resource.dart";
+part "src/blog/db/blog_store.dart";
 
 void main() {   
   hierarchicalLoggingEnabled = false;
@@ -47,9 +56,12 @@ void main() {
   final ImmutableBiMap<_UserPwd, String> userPwdToSid =
       Persistent.EMPTY_BIMAP.put(new _UserPwd("test", "test"), "1234");
   
+  final BlogStore blogStore = new BlogStore();
+  
   final Router router =
       Router.EMPTY.addAll(
           [ioFormBasedAuthResource(ROUTE.parseValue("/example/login"), userPwdToSid),
+           entryResource(blogStore, ROUTE.parseValue("/example/blog/:userid/entries/:itemid")),
            sessionAuthenticatedEchoResource(
                ROUTE.parseValue("/example/echo/*session"), 
                URI_.parseValue("/example/login"),
