@@ -3,30 +3,38 @@ part of restlib.example;
 IOResource ioAuthenticatedEchoResource(final Route route) =>
     new IOResource.conneg(
         new Resource.authorizingResource(
-            new _EchoResource(route), [new _EchoAuthorizer()]),
+            new Resource.uniform(new _EchoResourceDelegate(route)), [new _EchoAuthorizer()]),
         (_) => new Option(parseString), 
-        new ResponseWriterProvider.alwaysProvides(new ResponseWriter.string(MediaRange.TEXT_PLAIN)));
+        new ResponseWriterProvider.alwaysProvides(new ResponseWriter.string(TEXT_PLAIN)));
 
 IOResource sessionAuthenticatedEchoResource(final Route route, final URI loginForm, bool validateSID(Request request, String sid)) =>
     new IOResource.conneg(
         new _SessionAuthenticatedResource(
-            new _EchoResource(route),
+            new Resource.uniform(new _EchoResourceDelegate(route)),
             loginForm, validateSID),
         (_) => new Option(parseString), 
-        new ResponseWriterProvider.alwaysProvides(new ResponseWriter.string(MediaRange.TEXT_PLAIN)));
+        new ResponseWriterProvider.alwaysProvides(new ResponseWriter.string(TEXT_PLAIN)));
 
 IOResource ioEchoResource(final Route route) =>
     new IOResource.conneg(
-        new _EchoResource(route), 
+        new Resource.uniform(new _EchoResourceDelegate(route)), 
         (_) => new Option(parseString), 
-        new ResponseWriterProvider.alwaysProvides(new ResponseWriter.string(MediaRange.TEXT_PLAIN)));
+        new ResponseWriterProvider.alwaysProvides(new ResponseWriter.string(TEXT_PLAIN)));
 
 class _EchoResourceDelegate extends UniformResourceDelegate<String> {
   final bool requireETagForUpdate = false;
   final bool requireIfUnmodifiedSinceForUpdate = false;
   final Route route;
   
+  final RequestFilter extensionFilter = 
+      requestExtensionAsAccept(
+          new Dictionary.wrapMap(
+              {"html" : TEXT_HTML}));
+  
   _EchoResourceDelegate(this.route);
+  
+  Request filterRequest(final Request request) =>
+      extensionFilter(request);
   
   Future<Response> get(final Request request) => 
       new Future.value(
@@ -39,23 +47,6 @@ class _EchoResourceDelegate extends UniformResourceDelegate<String> {
           new Response(
               Status.SUCCESS_OK,
               entity : request));
-}
-
-class _EchoResource
-    extends Object
-    with ForwardingResource<String> {
-  final Resource<String> delegate;
-  
-  final RequestFilter extensionFilter = 
-      requestExtensionAsAccept(
-          new Dictionary.wrapMap(
-              {"html" : MediaRange.TEXT_HTML}));
-  
-  _EchoResource(final Route route):
-    delegate = new Resource.uniform(new _EchoResourceDelegate(route));
-  
-  Request filterRequest(final Request request) =>
-      extensionFilter(request);
 }
 
 class _EchoAuthorizer 
