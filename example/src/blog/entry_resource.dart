@@ -50,7 +50,7 @@ String writeAtomLink(final AtomLink link) =>
 Future writeAtomXMLEntry(final Request request, final Response<AtomEntry<String>> response, final StreamSink<List<int>> msgSink) {
   final AtomEntry<String> entry = response.entity.value;
   final String atom =
-""""<?xml version="1.0" encoding="UTF-8"?>
+"""<?xml version="1.0" encoding="UTF-8"?>
 <entry xmlns="http://www.w3.org/2005/Atom">
   <id>${entry.id}</id>
   <title>${entry.title}</title>
@@ -80,7 +80,31 @@ Future writeFormEntry(final Request request, final Response<AtomEntry<String>> r
 }
 
 Future writeHtmlEntry(final Request request, final Response<AtomEntry<String>> response, final StreamSink<List<int>> msgSink) {
-  
+  final AtomEntry<String> entry = response.entity.value;
+  final String html = 
+"""<!DOCTYPE html>
+<html>
+  <head>
+    <title>${entry.title}</title>
+    ${entry.links.map(writeAtomLink).join("\n    ")}
+  </head>
+  <body>
+    <div id="${entry.id}" class="hentry">
+      <h1 class="entry-title">${entry.title}</h1>        
+      <div>
+        Updated: <abbr class="updated" title="${entry.updated}">${entry.updated}</abbr>
+      </div>
+      ${entry.published.map((final DateTime published) =>
+          """"<div>
+        Created: <abbr class="published" title="${published}">${published}</abbr>
+      </div>""").orElse("")}
+      
+      <p class="entry-content">${entry.content.value}</p>
+    </div>
+  </body>
+</html>""";
+  final Response<String> htmlResponse = response.with_(entity:html);
+  return writeString(request, htmlResponse, msgSink);
 }
 
 Future writeJsonEntry(final Request request, final Response<AtomEntry<String>> response, final StreamSink<List<int>> msgSink) {
@@ -149,6 +173,14 @@ class _EntryResourceDelegate extends UniformResourceDelegate<AtomEntry<String>> 
   final Dictionary<String, MediaRange> extensionMap;
   final Route route;
   
+  final RequestFilter extensionFilter = 
+      requestExtensionAsAccept(
+          new Dictionary.wrapMap(
+              {"html" : TEXT_HTML,
+                "atom" : APPLICATION_ATOM_XML,
+                "json" : APPLICATION_JSON,
+                "form" : APPLICATION_WWW_FORM}));
+  
   _EntryResourceDelegate(
       this.acceptedMediaRanges, this.blogStore,
       this.extensionMap, this.route);
@@ -166,6 +198,9 @@ class _EntryResourceDelegate extends UniformResourceDelegate<AtomEntry<String>> 
       new AtomEntry(generateId(uri, entry.created), entry.title, entry.updated, 
           content: entry.content,
           links: generateLinks(uri));
+  
+  Request filterRequest(Request request) =>
+      extensionFilter(request);
   
   ImmutableSequence<AtomLink> generateLinks(final URI uri) =>
       AtomLink.alternativeLinks(uri, this.extensionMap)
