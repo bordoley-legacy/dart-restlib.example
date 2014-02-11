@@ -16,7 +16,7 @@ class _FileResourceDelegate extends UniformResourceDelegate<FileSystemEntity> {
   
   Future<Response> get(final Request request) {
     final Dictionary<String, String> params = 
-        route.parsePathParameters(request.uri);
+        route.parametersFromPath(request.uri.path);
     
     return params["file"]
       .map((final String path) {
