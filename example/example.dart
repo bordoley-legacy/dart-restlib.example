@@ -2,6 +2,7 @@ library restlib.example;
 
 import "dart:async";
 import "dart:convert";
+import "dart:math";
 import "dart:io";
 
 import "package:logging/logging.dart";
@@ -24,7 +25,6 @@ import "package:restlib_common/collections.immutable.dart";
 import "package:restlib_common/collections.mutable.dart";
 import "package:restlib_common/io.dart";
 import "package:restlib_common/objects.dart";
-import "package:restlib_common/preconditions.dart";
 
 import "package:restlib_atom/atom.dart";
 
@@ -32,8 +32,11 @@ part "src/echo_resource.dart";
 part "src/file_resource.dart";
 part "src/form_based_authentication.dart";
 part "src/session_authenticated_resource.dart";
+part "src/blog/entry_parsers.dart";
 part "src/blog/entry_resource.dart";
+part "src/blog/entry_serializers.dart";
 part "src/blog/feed_resource.dart";
+part "src/blog/feed_serializers.dart";
 part "src/blog/db/blog_store.dart";
 
 void main() {   
@@ -59,10 +62,18 @@ void main() {
   
   final BlogStore blogStore = new BlogStore();
   
+  final Dictionary<String, MediaRange> extensionMap = 
+      Persistent.EMPTY_DICTIONARY.putAllFromMap(
+          {"html" : TEXT_HTML,
+            "atom" : APPLICATION_ATOM_XML,
+            "form" : APPLICATION_WWW_FORM,
+            "json" : APPLICATION_JSON});
+  
   final Router router =
       Router.EMPTY.addAll(
-          [ioFormBasedAuthResource(ROUTE.parseValue("/example/login"), userPwdToSid),
-           entryResource(blogStore, ROUTE.parseValue("/example/blog/:userid/entries/:itemid")),
+          [entryResource(blogStore, ROUTE.parseValue("/example/blog/:userid/entries/:itemid")),
+           feedResource(blogStore, extensionMap, ROUTE.parseValue("/example/blog/:userid")),
+           ioFormBasedAuthResource(ROUTE.parseValue("/example/login"), userPwdToSid),
            sessionAuthenticatedEchoResource(
                ROUTE.parseValue("/example/echo/*session"), 
                URI_.parseValue("/example/login"),
