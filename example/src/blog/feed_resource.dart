@@ -1,19 +1,5 @@
 part of restlib.example.blog;
 
-Option<Dictionary<MediaRange, ResponseWriter>> feedResourceResponseWriters(final Request request, final Response response) =>
-    computeIfEmpty(entryResponseWriters(request,response), () =>
-        feedResponseWriters(request,response));
-
-IOResource feedResource(final _BlogStore blogStore, final Dictionary<String, MediaRange> feedExtensionMap, final Dictionary<String, MediaRange> entryExtensionMap, final Route route) {
-  final Resource<AtomEntry<String>> resource = 
-        new Resource.uniform(
-            new _FeedResourceDelegate(blogStore, feedExtensionMap, entryExtensionMap, route));
-  return new IOResource.conneg(
-      resource,
-      entryParserProvider, 
-      new ResponseWriterProvider.onContentType(feedResourceResponseWriters));
-}
-
 class _FeedResourceDelegate extends UniformResourceDelegate<AtomEntry<String>> {
   final bool requireETagForUpdate = false;
   final bool requireIfUnmodifiedSinceForUpdate = false;
@@ -52,7 +38,7 @@ class _FeedResourceDelegate extends UniformResourceDelegate<AtomEntry<String>> {
             links: generateLinks(request.uri, entryExtensionMap),
             entries: entries.map((final _BlogEntry entry) =>
                 // FIXME:
-                atomEntryFromBlogEntry(entry, request.uri, entryExtensionMap)));
+                _atomEntryFromBlogEntry(entry, request.uri, entryExtensionMap)));
         
         return new Future.value(
             new Response(Status.SUCCESS_OK,
@@ -73,7 +59,7 @@ class _FeedResourceDelegate extends UniformResourceDelegate<AtomEntry<String>> {
                 
         return new Future.value(
             new Response(Status.SUCCESS_OK,
-                entity: atomEntryFromBlogEntry(result, request.uri, entryExtensionMap),
+                entity: _atomEntryFromBlogEntry(result, request.uri, entryExtensionMap),
                 lastModified: result.updated));
       });
 }

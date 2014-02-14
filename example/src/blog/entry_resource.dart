@@ -1,16 +1,5 @@
 part of restlib.example.blog;
 
-IOResource entryResource(final _BlogStore blogStore, final Dictionary<String, MediaRange> extensionMap, final Route route) {
-  // FIXME: add methods to route to allow for validating parameters.
-  final Resource<AtomEntry<String>> resource = 
-      new Resource.uniform(
-          new _EntryResourceDelegate(blogStore, extensionMap, route));
-  return new IOResource.conneg(
-      resource,
-      entryParserProvider, 
-      new ResponseWriterProvider.onContentType(entryResponseWriters));
-}
-
 class _EntryResourceDelegate extends UniformResourceDelegate<AtomEntry<String>> {
   final bool requireETagForUpdate = false;
   final bool requireIfUnmodifiedSinceForUpdate = false;
@@ -52,7 +41,7 @@ class _EntryResourceDelegate extends UniformResourceDelegate<AtomEntry<String>> 
                       // FIXME: include the entity
                       new Response(
                           Status.SUCCESS_OK,
-                          entity: atomEntryFromBlogEntry(blogEntry, request.uri, extensionMap),
+                          entity: _atomEntryFromBlogEntry(blogEntry, request.uri, extensionMap),
                           lastModified: blogEntry.updated)))
               .orElse(CLIENT_ERROR_NOT_FOUND));
 
@@ -75,7 +64,7 @@ class _EntryResourceDelegate extends UniformResourceDelegate<AtomEntry<String>> 
         // FIXME: include the entity
         return new Future.value(
             new Response(Status.SUCCESS_OK,
-                entity: atomEntryFromBlogEntry(result, request.uri, extensionMap),
+                entity: _atomEntryFromBlogEntry(result, request.uri, extensionMap),
                 lastModified: result.updated));
       });
 }

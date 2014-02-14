@@ -1,6 +1,6 @@
 part of restlib.example.blog;
 
-AtomEntry atomEntryFromBlogEntry(final _BlogEntry entry, final URI uri, final Dictionary<String, MediaRange> extensionMap) =>
+AtomEntry _atomEntryFromBlogEntry(final _BlogEntry entry, final URI uri, final Dictionary<String, MediaRange> extensionMap) =>
     new AtomEntry(generateId(uri, entry.created), entry.title, entry.updated, 
         content: entry.content,
         links: generateLinks(uri, extensionMap));

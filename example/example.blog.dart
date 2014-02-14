@@ -46,6 +46,31 @@ Iterable<IOResource> blog(final Path basePath) {
       .add(feedResource(blogStore, feedExtensionMap, entryExtensionMap, feedRoute));
 }
 
+IOResource entryResource(final _BlogStore blogStore, final Dictionary<String, MediaRange> extensionMap, final Route route) {
+  // FIXME: add methods to route to allow for validating parameters.
+  final Resource<AtomEntry<String>> resource = 
+      new Resource.uniform(
+          new _EntryResourceDelegate(blogStore, extensionMap, route));
+  return new IOResource.conneg(
+      resource,
+      entryParserProvider, 
+      new ResponseWriterProvider.onContentType(entryResponseWriters));
+}
+
+Option<Dictionary<MediaRange, ResponseWriter>> feedResourceResponseWriters(final Request request, final Response response) =>
+    computeIfEmpty(entryResponseWriters(request,response), () =>
+        feedResponseWriters(request,response));
+
+IOResource feedResource(final _BlogStore blogStore, final Dictionary<String, MediaRange> feedExtensionMap, final Dictionary<String, MediaRange> entryExtensionMap, final Route route) {
+  final Resource<AtomEntry<String>> resource = 
+        new Resource.uniform(
+            new _FeedResourceDelegate(blogStore, feedExtensionMap, entryExtensionMap, route));
+  return new IOResource.conneg(
+      resource,
+      entryParserProvider, 
+      new ResponseWriterProvider.onContentType(feedResourceResponseWriters));
+}
+
 ImmutableSequence<AtomLink> generateLinks(final URI uri, final Dictionary<String, MediaRange> extensionMap) =>
     AtomLink.alternativeLinks(uri, extensionMap)
       .add(new AtomLink.self(uri))
