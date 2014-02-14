@@ -1,13 +1,13 @@
-part of restlib.example;
+part of restlib.example.blog;
 
 Option<Dictionary<MediaRange, ResponseWriter>> feedResourceResponseWriters(final Request request, final Response response) =>
     computeIfEmpty(entryResponseWriters(request,response), () =>
         feedResponseWriters(request,response));
 
-IOResource feedResource(final BlogStore blogStore, final Dictionary<String, MediaRange> entryExtensionMap, final Route route) {
+IOResource feedResource(final _BlogStore blogStore, final Dictionary<String, MediaRange> feedExtensionMap, final Dictionary<String, MediaRange> entryExtensionMap, final Route route) {
   final Resource<AtomEntry<String>> resource = 
         new Resource.uniform(
-            new _FeedResourceDelegate(blogStore, entryExtensionMap, route));
+            new _FeedResourceDelegate(blogStore, feedExtensionMap, entryExtensionMap, route));
   return new IOResource.conneg(
       resource,
       entryParserProvider, 
@@ -18,20 +18,22 @@ class _FeedResourceDelegate extends UniformResourceDelegate<AtomEntry<String>> {
   final bool requireETagForUpdate = false;
   final bool requireIfUnmodifiedSinceForUpdate = false;
   final Dictionary<String, MediaRange> entryExtensionMap;
+  final Dictionary<String, MediaRange> feedExtensionMap;
   
-  final BlogStore blogStore;
+  final _BlogStore blogStore;
   final Route route;
   final Random rand = new Random();
+
+  final RequestFilter extensionFilter; 
+      
   
-  final RequestFilter extensionFilter = 
-      requestExtensionAsAccept(
-          new Dictionary.wrapMap(
-              {"html" : TEXT_HTML,
-                "atom" : APPLICATION_ATOM_XML,
-                "json" : APPLICATION_JSON,
-                "form" : APPLICATION_WWW_FORM}));
-  
-  _FeedResourceDelegate(this.blogStore, this.entryExtensionMap, this.route);
+  _FeedResourceDelegate(this.blogStore, this.feedExtensionMap, final Dictionary<String, MediaRange> entryExtensionMap, this.route) :
+    this.entryExtensionMap = entryExtensionMap,
+        
+    // FIXME: requestExtensionAsAccept should take an Iterable of pairs.
+    // Then we should create a set of all pairs from both extension maps
+    // and use those as the argument.
+    extensionFilter = requestExtensionAsAccept(entryExtensionMap);
   
   Future<Response> _processRequest(final Request request, Future<Response> handler(final String userId)) =>
       route.parametersFromPath(request.uri.path)["userid"].map(handler).orCompute(() => 
@@ -42,13 +44,13 @@ class _FeedResourceDelegate extends UniformResourceDelegate<AtomEntry<String>> {
   
   Future<Response> get(final Request request) =>
       _processRequest(request, (final String userId) {
-        final Iterable<BlogEntry> entries = blogStore.getBlogEntries(userId); 
+        final Iterable<_BlogEntry> entries = blogStore.getBlogEntries(userId); 
         final AtomFeed feed = new AtomFeed(
-            request.uri, "$userId's blog", first(entries).map((final BlogEntry entry) => 
+            request.uri, "$userId's blog", first(entries).map((final _BlogEntry entry) => 
                 entry.updated).orCompute(() => 
                     new DateTime.now()),
             links: generateLinks(request.uri, entryExtensionMap),
-            entries: entries.map((final BlogEntry entry) =>
+            entries: entries.map((final _BlogEntry entry) =>
                 // FIXME:
                 atomEntryFromBlogEntry(entry, request.uri, entryExtensionMap)));
         
@@ -65,7 +67,7 @@ class _FeedResourceDelegate extends UniformResourceDelegate<AtomEntry<String>> {
         final String id = rand.nextInt((1<<32) - 1).toString();
         final DateTime now = new DateTime.now(); 
         
-        final BlogEntry result = new BlogEntry(now, newContent, id, newTitle, now, userId);
+        final _BlogEntry result = new _BlogEntry(now, newContent, id, newTitle, now, userId);
         
         blogStore.putBlogEntry(result);
                 

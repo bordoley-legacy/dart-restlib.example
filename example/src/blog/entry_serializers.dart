@@ -1,4 +1,4 @@
-part of restlib.example;
+part of restlib.example.blog;
 
 String entryToAtomXML(final AtomEntry entry) =>
     """<entry>
