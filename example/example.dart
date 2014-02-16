@@ -49,7 +49,7 @@ void main() {
           server: server);
 
   final ImmutableBiMap<_UserPwd, String> userPwdToSid =
-      Persistent.EMPTY_BIMAP.put(new _UserPwd("test", "test"), "1234");
+      EMPTY_BIMAP.put(new _UserPwd("test", "test"), "1234");
   
   final Router router =
       Router.EMPTY

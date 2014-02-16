@@ -89,7 +89,7 @@ Option<Dictionary<MediaRange, ResponseWriter>> responseWriters(final Request req
   }
   
   return new Option(
-      Persistent.EMPTY_DICTIONARY.put(
+      EMPTY_DICTIONARY.put(
           mediaRange, new ResponseWriter.forContentType(mediaRange, writer)));
 }
 

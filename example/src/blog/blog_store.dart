@@ -11,7 +11,7 @@ class _BlogStore {
   
   Iterable<_BlogEntry> getBlogEntries(final String userId) =>
       entries[userId]
-        .orElse(Persistent.EMPTY_DICTIONARY).values
+        .orElse(EMPTY_DICTIONARY).values
         .toList()..sort((final _BlogEntry x, final _BlogEntry y) =>
             x.updated.compareTo(y.updated));
   

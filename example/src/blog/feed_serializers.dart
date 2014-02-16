@@ -55,7 +55,7 @@ Future writeHtmlFeed(final Request request, final Response<AtomFeed<AtomEntry<St
 Future writeJsonFeed(final Request request, final Response<AtomFeed<AtomEntry<String>>> response, final StreamSink<List<int>> msgSink) {
   final AtomFeed feed = response.entity.value;
   final Map jsonMap =
-      Persistent.EMPTY_DICTIONARY
+      EMPTY_DICTIONARY
         .putAllFromMap({
           "id" : feed.id.toString(),
           "updated" : feed.updated.toString(),
@@ -71,7 +71,7 @@ Option<Dictionary<MediaRange, ResponseWriter>> feedResponseWriters(final Request
   
   if (entity is AtomFeed) {
     return new Option(
-        Persistent.EMPTY_DICTIONARY
+        EMPTY_DICTIONARY
           .put(APPLICATION_JSON, new ResponseWriter.forContentType(APPLICATION_JSON, writeJsonFeed))
           .put(APPLICATION_ATOM_XML, new ResponseWriter.forContentType(APPLICATION_ATOM_XML, writeAtomXMLFeed))
           .put(TEXT_HTML, new ResponseWriter.forContentType(TEXT_HTML, writeHtmlFeed)));

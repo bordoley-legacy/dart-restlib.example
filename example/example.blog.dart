@@ -30,7 +30,7 @@ Iterable<IOResource> blog(final Path basePath) {
   final _BlogStore blogStore = new _BlogStore();
   
   final ImmutableDictionary<String, MediaRange> feedExtensionMap = 
-      Persistent.EMPTY_DICTIONARY.putAllFromMap(
+      EMPTY_DICTIONARY.putAllFromMap(
                 {"html" : TEXT_HTML,
                   "atom" : APPLICATION_ATOM_XML,
                   "json" : APPLICATION_JSON});
@@ -41,7 +41,7 @@ Iterable<IOResource> blog(final Path basePath) {
   final Route feedRoute = Route.EMPTY.addAll(basePath).add(":userid");
   final Route entryRoute = feedRoute.add("blog").add(":itemid");
   
-  return Persistent.EMPTY_SEQUENCE
+  return EMPTY_SEQUENCE
       .add(entryResource(blogStore, entryExtensionMap, entryRoute))
       .add(feedResource(blogStore, feedExtensionMap, entryExtensionMap, feedRoute));
 }

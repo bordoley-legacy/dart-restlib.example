@@ -31,7 +31,7 @@ String entryToHTML(final AtomEntry entry) =>
 
 Map linkToJson(final AtomLink link) {
   ImmutableDictionary<String, dynamic> retval = 
-      Persistent.EMPTY_DICTIONARY.put("href", link.href.toString());
+      EMPTY_DICTIONARY.put("href", link.href.toString());
   link.hrefLanguage.map((final Language language) =>
       retval = retval.put("hrefLang", language.toString()));
   link.length.map((final int length) =>
@@ -130,7 +130,7 @@ Option<Dictionary<MediaRange, ResponseWriter>> entryResponseWriters(final Reques
   
   if (entity is AtomEntry) {
     return new Option(
-        Persistent.EMPTY_DICTIONARY
+        EMPTY_DICTIONARY
           .put(APPLICATION_JSON, new ResponseWriter.forContentType(APPLICATION_JSON, writeJsonEntry))
           .put(APPLICATION_ATOM_XML, new ResponseWriter.forContentType(APPLICATION_ATOM_XML, writeAtomXMLEntry))
           .put(TEXT_HTML, new ResponseWriter.forContentType(TEXT_HTML, writeHtmlEntry))
