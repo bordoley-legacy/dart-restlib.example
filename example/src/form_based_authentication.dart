@@ -20,16 +20,16 @@ String _authform(final URI callback, [final String error]) =>
   </body>
 </html>
 """;
-      
+
 class _UserPwd {
   final String user;
   final String pwd;
-  
+
   _UserPwd(this.user, this.pwd);
-  
+
   int get hashCode =>
       computeHashCode([user, pwd]);
-  
+
   bool operator==(other) {
     if (identical(this,other)) {
       return true;
@@ -41,18 +41,18 @@ class _UserPwd {
     }
   }
 }
-    
+
 IOResource ioFormBasedAuthResource(final Route route, Option<String> sidForUserPwd(final _UserPwd userPwd)) =>
     new IOResource.conneg(
       new Resource.uniform(new _FormBasedAuthResource(route, sidForUserPwd)),
-      (final ContentInfo contentInfo) => 
+      (final ContentInfo contentInfo) =>
           contentInfo.mediaRange
             .map((final MediaRange mr) {
               if (mr == APPLICATION_WWW_FORM) {
                 return parseForm;
               }
             }),
-      new ResponseWriterProvider.alwaysProvides(new ResponseWriter.string(TEXT_HTML))  
+      new ResponseWriterProvider.alwaysProvides(new ResponseWriter.string(TEXT_HTML))
     );
 
 typedef Option<String> _SidForUserPwd(final _UserPwd userPwd);
@@ -62,43 +62,48 @@ class _FormBasedAuthResource extends UniformResourceDelegate<Form> {
   final bool requireIfUnmodifiedSinceForUpdate = false;
   final Route route;
   final _SidForUserPwd sidForUserPwd;
-  
+
   _FormBasedAuthResource(this.route, this.sidForUserPwd);
-  
+
   Future<Response> get(final Request request) =>
         new Future.value(
           new Response(
             Status.SUCCESS_OK,
             entity : _authform(request.uri)));
-  
+
   Future<Response> post(final Request<Form> request) {
     final Form entity = request.entity.value;
     final Option<String> user = first(entity[_USERNAME]);
     final Option<String> pwd = first(entity[_PASSWORD]);
-    
+
     Response response;
-    
+
     if (user.isEmpty || pwd.isEmpty) {
-      response = 
+      response =
           new Response(
               Status.SUCCESS_OK,
               entity : _authform(request.uri, "Missing either username or pwd"));
-    } else {   
+    } else {
       response = sidForUserPwd(new _UserPwd(user.value, pwd.value)).map((final String sid) {
+        Form form;
+        try {
+          form = Form.parse(request.uri.query);
+        } on ArgumentError {
+          return CLIENT_ERROR_BAD_REQUEST;
+        }
+
         final URI redirectURI =
-            FORM.parse(request.uri.query)
-              .flatMap((final Form form) =>
-                  first(form[_TARGET]))
+            first(form[_TARGET])
               .flatMap((final String uri) =>
-                  URI_.parse(uri)) 
+                  URI_.parse(uri))
               .orCompute(() =>
                   request.uri);
-  
+
         return new Response(
             Status.REDIRECTION_FOUND,
-            setCookies: [SET_COOKIE.parseValue("$_SID=$sid")],
+            setCookies: [SetCookie.parse("$_SID=$sid")],
             location: redirectURI);
-      }).orCompute(() => 
+      }).orCompute(() =>
           new Response(
               Status.SUCCESS_OK,
               entity : _authform(request.uri, "Bad username or pwd")));

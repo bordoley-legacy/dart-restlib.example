@@ -30,47 +30,47 @@ part "src/file_resource.dart";
 part "src/form_based_authentication.dart";
 part "src/session_authenticated_resource.dart";
 
-void main() {   
+void main() {
   hierarchicalLoggingEnabled = false;
   Logger.root.level = Level.FINEST;
-  Logger.root.onRecord.forEach((final LogRecord record) => 
+  Logger.root.onRecord.forEach((final LogRecord record) =>
       print(record.message));
-  
-  final Directory fileDirectory = 
+
+  final Directory fileDirectory =
       new Directory(Platform.environment["HOME"]);
-  
-  final UserAgent server = USER_AGENT.parseValue("restlibExample/1.0");
-  
+
+  final UserAgent server = UserAgent.parse("restlibExample/1.0");
+
   Request requestFilter(final Request request) =>
       requestMethodOverride(request);
-   
+
   Response responseFilter(final Response response) =>
       response.with_(
           server: server);
 
   final ImmutableBiMap<_UserPwd, String> userPwdToSid =
       EMPTY_BIMAP.put(new _UserPwd("test", "test"), "1234");
-  
+
   final Router router =
       Router.EMPTY
         .addAll(blog(PATH.parseValue("/example/blog")))
         .addAll(
           [ioFormBasedAuthResource(ROUTE.parseValue("/example/login"), userPwdToSid),
            sessionAuthenticatedEchoResource(
-               ROUTE.parseValue("/example/echo/*session"), 
+               ROUTE.parseValue("/example/echo/*session"),
                URI_.parseValue("/example/login"),
-               (final Request request, final String sid) => 
+               (final Request request, final String sid) =>
                    userPwdToSid.inverse[sid].isNotEmpty),
            ioAuthenticatedEchoResource(ROUTE.parseValue("/example/echo/*authenticated")),
            ioEchoResource(ROUTE.parseValue("/example/*echo")),
            ioFileResource(fileDirectory, URI_.parseValue("/example"))]);
-  
-  final Application app = 
+
+  final Application app =
       new Application(
           router,
           requestFilter : requestFilter,
           responseFilter : responseFilter);
-  
+
   HttpServer
     .bind("0.0.0.0", 8080)
     .then(httpServerListener((final Request request) => app, "http"));
