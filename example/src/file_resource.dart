@@ -2,7 +2,7 @@ part of restlib.example;
 
 MediaRange mediaRangeForFile(final file) =>
     new Option(lookupMimeType(file.path))
-      .map(MediaRange.parse)
+      .map(MediaRange.parser.parseValue)
       .orElse(APPLICATION_OCTET_STREAM);
 
 class _FileResourceDelegate extends UniformResourceDelegate<FileSystemEntity> {

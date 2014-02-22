@@ -87,7 +87,7 @@ class _FormBasedAuthResource extends UniformResourceDelegate<Form> {
       response = sidForUserPwd(new _UserPwd(user.value, pwd.value)).map((final String sid) {
         Form form;
         try {
-          form = Form.parse(request.uri.query);
+          form = Form.parser.parseValue(request.uri.query);
         } on ArgumentError {
           return CLIENT_ERROR_BAD_REQUEST;
         }
@@ -101,7 +101,7 @@ class _FormBasedAuthResource extends UniformResourceDelegate<Form> {
 
         return new Response(
             Status.REDIRECTION_FOUND,
-            setCookies: [SetCookie.parse("$_SID=$sid")],
+            setCookies: [SetCookie.parser.parseValue("$_SID=$sid")],
             location: redirectURI);
       }).orCompute(() =>
           new Response(

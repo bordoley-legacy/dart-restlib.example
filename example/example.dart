@@ -39,7 +39,7 @@ void main() {
   final Directory fileDirectory =
       new Directory(Platform.environment["HOME"]);
 
-  final UserAgent server = UserAgent.parse("restlibExample/1.0");
+  final UserAgent server = UserAgent.parser.parseValue("restlibExample/1.0");
 
   Request requestFilter(final Request request) =>
       requestMethodOverride(request);
