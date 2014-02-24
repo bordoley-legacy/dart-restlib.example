@@ -53,17 +53,17 @@ void main() {
 
   final Router router =
       Router.EMPTY
-        .addAll(blog(PATH.parseValue("/example/blog")))
+        .addAll(blog(Path.parser.parseValue("/example/blog")))
         .addAll(
           [ioFormBasedAuthResource(ROUTE.parseValue("/example/login"), userPwdToSid),
            sessionAuthenticatedEchoResource(
                ROUTE.parseValue("/example/echo/*session"),
-               URI_.parseValue("/example/login"),
+               URI.parser.parseValue("/example/login"),
                (final Request request, final String sid) =>
                    userPwdToSid.inverse[sid].isNotEmpty),
            ioAuthenticatedEchoResource(ROUTE.parseValue("/example/echo/*authenticated")),
            ioEchoResource(ROUTE.parseValue("/example/*echo")),
-           ioFileResource(fileDirectory, URI_.parseValue("/example"))]);
+           ioFileResource(fileDirectory, URI.parser.parseValue("/example"))]);
 
   final Application app =
       new Application(

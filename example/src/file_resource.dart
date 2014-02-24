@@ -21,7 +21,7 @@ class _FileResourceDelegate extends UniformResourceDelegate<FileSystemEntity> {
     return params["file"]
       .map((final String path) {
         // FIXME use URI component API instead of Uri.decode
-        final Path relativeFilePath = Path.EMPTY.addAll(PATH.parseValue(path).skip(1));
+        final Path relativeFilePath = Path.EMPTY.addAll(Path.parser.parseValue(path).skip(1));
         final String filePath = posix.join(_base.path, Uri.decodeComponent(relativeFilePath.toString()));
         return FileSystemEntity.type(filePath)
             .then((final FileSystemEntityType type) =>

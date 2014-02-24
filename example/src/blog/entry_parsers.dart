@@ -1,8 +1,8 @@
 part of restlib.example.blog;
 
-AtomEntry<String> atomEntryFromAssociative(final Associative<String,String> assoc) => 
+AtomEntry<String> atomEntryFromAssociative(final Associative<String,String> assoc) =>
     // FIXME: use IRI_, but its crashing right now.
-    new AtomEntry(URI_.parseValue(first(assoc["id"]).orElse("")), first(assoc["title"]).orElse(""), new DateTime.now(), content: assoc["content"].first);  
+    new AtomEntry(URI.parser.parseValue(first(assoc["id"]).orElse("")), first(assoc["title"]).orElse(""), new DateTime.now(), content: assoc["content"].first);
 
 Option<RequestParser> entryParserProvider(final ContentInfo contentInfo) =>
     contentInfo.mediaRange.map((final MediaRange mr) {
@@ -20,7 +20,7 @@ Option<RequestParser> entryParserProvider(final ContentInfo contentInfo) =>
     });
 
 Future<Request<AtomEntry<String>>> parseAtomXmlEntry(final Request request, final Stream<List<int>> msgStream) {
-  
+
 }
 
 Future<Request<AtomEntry<String>>> parseFormEntry(final Request request, final Stream<List<int>> msgStream) =>
@@ -32,7 +32,7 @@ Future<Request<AtomEntry<String>>> parseFormEntry(final Request request, final S
       });
 
 Future<Request<AtomEntry<String>>> parseHtmlEntry(final Request request, final Stream<List<int>> msgStream) {
-  
+
 }
 
 Future<Request<AtomEntry<String>>> parseJsonEntry(final Request request, final Stream<List<int>> msgStream) =>
