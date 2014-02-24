@@ -12,6 +12,7 @@ import "package:restlib_core/data.media_ranges.dart";
 import "package:restlib_core/http.dart";
 import "package:restlib_core/http.future_responses.dart";
 import "package:restlib_core/http.methods.dart";
+import "package:restlib_core/http.statuses.dart" as Status;
 import "package:restlib_core/multipart.dart";
 import "package:restlib_core/net.dart";
 
