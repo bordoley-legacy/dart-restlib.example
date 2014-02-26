@@ -57,14 +57,14 @@ void main() {
       Router.EMPTY
         .addAll(blog(Path.parser.parseValue("/example/blog")))
         .addAll(
-          [ioFormBasedAuthResource(ROUTE.parseValue("/example/login"), userPwdToSid),
+          [ioFormBasedAuthResource(Route.parser.parseValue("/example/login"), userPwdToSid),
            sessionAuthenticatedEchoResource(
-               ROUTE.parseValue("/example/echo/*session"),
+               Route.parser.parseValue("/example/echo/*session"),
                URI.parser.parseValue("/example/login"),
                (final Request request, final String sid) =>
                    userPwdToSid.inverse[sid].isNotEmpty),
-           ioAuthenticatedEchoResource(ROUTE.parseValue("/example/echo/*authenticated")),
-           ioEchoResource(ROUTE.parseValue("/example/*echo")),
+           ioAuthenticatedEchoResource(Route.parser.parseValue("/example/echo/*authenticated")),
+           ioEchoResource(Route.parser.parseValue("/example/*echo")),
            ioFileResource(fileDirectory, URI.parser.parseValue("/example"))]);
 
   final Application app =
