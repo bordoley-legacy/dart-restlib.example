@@ -67,7 +67,7 @@ void main() {
            ioAuthenticatedEchoResource(Route.parser.parseValue("/example/echo/*authenticated")),
            ioEchoResource(Route.parser.parseValue("/example/*echo")),
            ioFileResource(fileDirectory, URI.parser.parseValue("/example")),
-           new ProxyResource(Route.parser.parseValue("/example/proxy"), dartIOStreamHttpClient)]);
+           new ProxyResource(Route.parser.parseValue("/example/proxy"), streamHttpClient)]);
 
   final Application app =
       new Application(
