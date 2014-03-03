@@ -26,6 +26,7 @@ import "package:restlib_common/io.dart";
 import "package:restlib_common/objects.dart";
 
 import "example.blog.dart";
+import "example.proxy.dart";
 
 part "src/echo_resource.dart";
 part "src/file_resource.dart";
@@ -65,7 +66,8 @@ void main() {
                    userPwdToSid.inverse[sid].isNotEmpty),
            ioAuthenticatedEchoResource(Route.parser.parseValue("/example/echo/*authenticated")),
            ioEchoResource(Route.parser.parseValue("/example/*echo")),
-           ioFileResource(fileDirectory, URI.parser.parseValue("/example"))]);
+           ioFileResource(fileDirectory, URI.parser.parseValue("/example")),
+           new ProxyResource(Route.parser.parseValue("/example/proxy"), dartIOStreamHttpClient)]);
 
   final Application app =
       new Application(
