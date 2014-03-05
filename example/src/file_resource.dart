@@ -1,4 +1,4 @@
-part of restlib.example;
+part of example;
 
 MediaRange mediaRangeForFile(final file) =>
     new Option(lookupMimeType(file.path))

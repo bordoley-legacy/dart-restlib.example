@@ -1,4 +1,4 @@
-part of restlib.example.blog;
+part of example.blog;
 
 Future writeAtomXMLFeed(final Request request, final Response<AtomFeed> response, final StreamSink<List<int>> msgSink) {
   final AtomFeed feed = response.entity.value;

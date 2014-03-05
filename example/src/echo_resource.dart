@@ -1,4 +1,4 @@
-part of restlib.example;
+part of example;
 
 IOResource ioAuthenticatedEchoResource(final Route route) =>
     new IOResource.conneg(

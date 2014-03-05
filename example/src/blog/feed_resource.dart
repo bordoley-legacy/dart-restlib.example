@@ -1,4 +1,4 @@
-part of restlib.example.blog;
+part of example.blog;
 
 class _FeedResourceDelegate extends UniformResourceDelegate<AtomEntry<String>> {
   final bool requireETagForUpdate = false;

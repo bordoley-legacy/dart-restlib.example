@@ -1,4 +1,4 @@
-library restlib.example.proxy;
+library example.proxy;
 
 import "dart:async";
 

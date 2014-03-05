@@ -1,4 +1,4 @@
-library restlib.example.blog;
+library example.blog;
 
 import "dart:async";
 import "dart:convert";

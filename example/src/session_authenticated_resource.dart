@@ -1,4 +1,4 @@
-part of restlib.example;
+part of example;
 
 typedef bool _ValidateSID(Request request, String sid);
 

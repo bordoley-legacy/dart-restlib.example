@@ -1,4 +1,4 @@
-part of restlib.example;
+part of example;
 
 const String _USERNAME = "username";
 const String _PASSWORD = "password";

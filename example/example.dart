@@ -1,4 +1,4 @@
-library restlib.example;
+library example;
 
 import "dart:async";
 import "dart:io";

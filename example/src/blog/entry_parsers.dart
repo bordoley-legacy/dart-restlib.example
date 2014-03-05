@@ -1,4 +1,4 @@
-part of restlib.example.blog;
+part of example.blog;
 
 AtomEntry<String> atomEntryFromAssociative(final Associative<String,String> assoc) =>
     // FIXME: use IRI_, but its crashing right now.
