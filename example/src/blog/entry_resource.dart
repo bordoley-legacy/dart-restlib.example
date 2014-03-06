@@ -19,7 +19,7 @@ class _EntryResourceDelegate extends UniformResourceDelegate<AtomEntry<String>> 
     final Option<String> userid = parameters["userid"];
     final Option<String> itemid = parameters["itemid"];
 
-    return first(zip(userid, itemid)).map(handler).orCompute(() =>
+    return first(zip([userid, itemid])).map(handler).orCompute(() =>
             throw new ArgumentError("Request URI path doesn't match Route pattern"));
   }
 
