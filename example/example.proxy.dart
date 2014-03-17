@@ -38,9 +38,12 @@ class _ProxyResourceDelegate extends UniformResourceDelegate<String> {
   _ProxyResourceDelegate(this.route, this._client);
 
   Future<Response> get(final Request request) =>
-      Form.parser.parse(request.uri.query)
+      Form.parser.parse(request.uri.query).left
         .flatMap((final Form form) =>
-            first(form["uri"]).flatMap(URI.parser.parse).map((final URI uri) =>
+            first(form["uri"])
+              .flatMap((final String uri) =>
+                  URI.parser.parse(uri).left)
+              .map((final URI uri) =>
                 _client.call(new Request(GET, uri)))
         ).orElse(CLIENT_ERROR_BAD_REQUEST);
 }

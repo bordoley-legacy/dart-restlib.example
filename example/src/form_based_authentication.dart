@@ -95,7 +95,7 @@ class _FormBasedAuthResource extends UniformResourceDelegate<Form> {
         final URI redirectURI =
             first(form[_TARGET])
               .flatMap((final String uri) =>
-                  URI.parser.parse(uri))
+                  URI.parser.parse(uri).left)
               .orCompute(() =>
                   request.uri);
 
