@@ -4,7 +4,7 @@ IOResource ioAuthenticatedEchoResource(final Route route) =>
     new IOResource.conneg(
         new Resource.authorizingResource(
             new Resource.uniform(new _EchoResourceDelegate(route)), [new _EchoAuthorizer()]),
-        (_) => new Option(parseString),
+        (_) => new Option(serverIO.parseString),
         new ResponseWriterProvider.alwaysProvides(new ResponseWriter.string(TEXT_PLAIN)));
 
 IOResource sessionAuthenticatedEchoResource(final Route route, final URI loginForm, bool validateSID(Request request, String sid)) =>
@@ -12,13 +12,13 @@ IOResource sessionAuthenticatedEchoResource(final Route route, final URI loginFo
         new _SessionAuthenticatedResource(
             new Resource.uniform(new _EchoResourceDelegate(route)),
             loginForm, validateSID),
-        (_) => new Option(parseString),
+        (_) => new Option(serverIO.parseString),
         new ResponseWriterProvider.alwaysProvides(new ResponseWriter.string(TEXT_PLAIN)));
 
 IOResource ioEchoResource(final Route route) =>
     new IOResource.conneg(
         new Resource.uniform(new _EchoResourceDelegate(route)),
-        (_) => new Option(parseString),
+        (_) => new Option(serverIO.parseString),
         new ResponseWriterProvider.alwaysProvides(new ResponseWriter.string(TEXT_PLAIN)));
 
 class _EchoResourceDelegate extends UniformResourceDelegate<String> {

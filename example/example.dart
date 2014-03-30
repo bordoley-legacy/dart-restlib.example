@@ -1,7 +1,7 @@
 library example;
 
 import "dart:async";
-import "dart:io";
+import "dart:io" as io;
 
 import "package:logging/logging.dart";
 import "package:mime/mime.dart";
@@ -16,14 +16,19 @@ import "package:restlib_core/http.statuses.dart" as Status;
 import "package:restlib_core/multipart.dart";
 import "package:restlib_core/net.dart";
 
+import "package:restlib_client/client.dart";
+
 import "package:restlib_http_connector/connector.dart";
+import "package:restlib_http_connector/connector.http_1_1.dart";
 import "package:restlib_server/io.dart";
 import "package:restlib_server/server.dart";
+import "package:restlib_server/io.dart" as serverIO;
 
 import "package:restlib_common/collections.dart";
 import "package:restlib_common/collections.immutable.dart";
 import "package:restlib_common/io.dart";
 import "package:restlib_common/objects.dart";
+import "package:restlib_common/preconditions.dart";
 
 import "example.blog.dart";
 import "example.proxy.dart";
@@ -39,8 +44,8 @@ void main() {
   Logger.root.onRecord.forEach((final LogRecord record) =>
       print(record.message));
 
-  final Directory fileDirectory =
-      new Directory(Platform.environment["HOME"]);
+  final io.Directory fileDirectory =
+      new io.Directory(io.Platform.environment["HOME"]);
 
   final UserAgent server = UserAgent.parser.parseValue("restlibExample/1.0");
 
@@ -53,6 +58,23 @@ void main() {
 
   final ImmutableBiMap<_UserPwd, String> userPwdToSid =
       EMPTY_BIMAP.put(new _UserPwd("test", "test"), "1234");
+
+  final HttpClient client = new Http_1_1_Client((final URI uri) {
+      checkNotNull(uri);
+      checkArgument(uri.authority.isNotEmpty);
+      checkArgument(uri.scheme.isNotEmpty);
+
+      final String host = uri.authority.value.host.value.toString();
+      final Option<int> port = uri.authority.value.port;
+
+      if (uri.scheme == "http") {
+        return io.Socket.connect(host, port.orElse(80));
+      } else if (uri.scheme == "https") {
+        return io.Socket.connect(host, port.orElse(443));
+      } else {
+        throw new ArgumentError("invalid scheme: $uri.scheme");
+      }
+    });
 
   final Router router =
       Router.EMPTY
@@ -67,7 +89,7 @@ void main() {
            ioAuthenticatedEchoResource(Route.parser.parseValue("/example/echo/*authenticated")),
            ioEchoResource(Route.parser.parseValue("/example/*echo")),
            ioFileResource(fileDirectory, URI.parser.parseValue("/example")),
-           new ProxyResource(Route.parser.parseValue("/example/proxy"), streamHttpClient)]);
+           new ProxyResource(Route.parser.parseValue("/example/proxy"), client)]);
 
   final Application app =
       new Application(
@@ -75,7 +97,7 @@ void main() {
           requestFilter : requestFilter,
           responseFilter : responseFilter);
 
-  HttpServer
+  io.HttpServer
     .bind("0.0.0.0", 8080)
     .then(httpServerListener((final Request request) => app, "http"));
 }

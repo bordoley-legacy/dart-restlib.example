@@ -15,7 +15,7 @@ import "package:restlib_server/server.dart";
 class ProxyResource extends ForwardingResource<Stream<List<int>>> implements IOResource {
   final Resource delegate;
 
-  ProxyResource(final Route route, final RestClient client) :
+  ProxyResource(final Route route, final HttpClient client) :
     delegate = new Resource.uniform(new _ProxyResourceDelegate(route, client));
 
   Future<Request<Stream<List<int>>>> parse(Request request, Stream<List<int>> msgStream) =>
@@ -33,7 +33,7 @@ class _ProxyResourceDelegate extends UniformResourceDelegate<String> {
   final bool requireETagForUpdate = false;
   final bool requireIfUnmodifiedSinceForUpdate = false;
   final Route route;
-  final RestClient _client;
+  final HttpClient _client;
 
   _ProxyResourceDelegate(this.route, this._client);
 
@@ -44,6 +44,6 @@ class _ProxyResourceDelegate extends UniformResourceDelegate<String> {
               .flatMap((final String uri) =>
                   URI.parser.parse(uri).left)
               .map((final URI uri) =>
-                _client.call(new Request(GET, uri)))
+                _client(new Request(GET, uri)).response)
         ).orElse(CLIENT_ERROR_BAD_REQUEST);
 }

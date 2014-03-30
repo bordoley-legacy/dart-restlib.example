@@ -49,7 +49,7 @@ IOResource ioFormBasedAuthResource(final Route route, Option<String> sidForUserP
           contentInfo.mediaRange
             .map((final MediaRange mr) {
               if (mr == APPLICATION_WWW_FORM) {
-                return parseForm;
+                return serverIO.parseForm;
               }
             }),
       new ResponseWriterProvider.alwaysProvides(new ResponseWriter.string(TEXT_HTML))
